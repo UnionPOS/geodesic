@@ -126,7 +126,7 @@ function geodesic_prompt() {
 	PS1+=$'${GEODISIC_PROMPT_GLYPHS-$BLACK_RIGHTWARDS_ARROWHEAD}'
 
 	if [ -n "${BANNER}" ]; then
-		PS1=$' ${BANNER_MARK}'" ${BANNER} $(kube_ps1)${secrets_active}\n"${PS1}
+		PS1=$'\n\n ${BANNER_MARK}'" ${BANNER} $(kube_ps1)${secrets_active}\n"${PS1}
 	fi
 	export PS1
 }

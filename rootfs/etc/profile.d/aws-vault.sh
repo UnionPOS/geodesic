@@ -204,11 +204,18 @@ if [ "${AWS_VAULT_ENABLED:-true}" == "true" ]; then
 			sync_clocks
 		fi
 
+		local file="${AWS_DATA_PATH}/${AWS_MFA_PROFILE}.mfa"
+		if [ -f "${file}" ]; then
+			MFA_ARGS=("--mfa-token=$(oathtool --base32 --totp "$(cat ${file})")")
+		else 
+			MFA_ARGS=""
+		fi
+
 		shift
 		if [ $# -eq 0 ]; then
-			aws-vault exec ${AWS_VAULT_ARGS[@]} $role -- bash -l
+			aws-vault exec ${MFA_ARGS} ${AWS_VAULT_ARGS[@]} $role -- bash -l
 		else
-			aws-vault exec ${AWS_VAULT_ARGS[@]} $role -- $*
+			aws-vault exec ${MFA_ARGS} ${AWS_VAULT_ARGS[@]} $role -- $*
 		fi
 	}
 

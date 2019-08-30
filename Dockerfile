@@ -33,6 +33,18 @@ RUN make dist
 
 
 #
+# Cloud Posse Package Distribution
+#
+FROM unionpos/packages:latest as packages
+WORKDIR /packages
+
+# Install the select packages from the cloudposse package manager image
+# Repo: <https://github.com/unionpos/packages>
+ARG PACKAGES="cfssl cfssljson slack-notifier terraform"
+ENV PACKAGES=${PACKAGES}
+RUN make dist
+
+#
 # Geodesic base image
 #
 FROM alpine:3.9.3
@@ -68,6 +80,7 @@ RUN apk add --update $(grep -v '^#' /etc/apk/packages.txt) && \
 RUN [[ $(/tmp/geodesic-apkindex-md5) == $(cat /var/cache/apk/geodesic_apkindex.md5) ]] || echo "WARNING: apk package repos mismatch: '$(/tmp/geodesic-apkindex-md5)' != '$(cat /var/cache/apk/geodesic_apkindex.md5)'" 1>&2
 RUN rm -f /tmp/geodesic-apkindex-md5
 
+# Disable ipv6 for this container image
 RUN echo "net.ipv6.conf.all.disable_ipv6=0" > /etc/sysctl.d/00-ipv6.conf
 
 # Disable vim from reading a swapfile (incompatible with goofys)
